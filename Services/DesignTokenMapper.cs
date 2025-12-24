@@ -14,11 +14,15 @@ public class DesignTokenMapper
     private Dictionary<string, string> _fontTokens = new();     // "Inter" → "body"
     private Dictionary<string, string> _radiusTokens = new();   // "8px" → "md"
 
-    // Generated tokens for output
-    public Dictionary<string, string> ColorTokens => _colorTokens.ToDictionary(kv => kv.Value, kv => kv.Key);
-    public Dictionary<string, string> SpacingTokens => _spacingTokens.ToDictionary(kv => kv.Value, kv => kv.Key);
-    public Dictionary<string, string> FontTokens => _fontTokens.ToDictionary(kv => kv.Value, kv => kv.Key);
-    public Dictionary<string, string> RadiusTokens => _radiusTokens.ToDictionary(kv => kv.Value, kv => kv.Key);
+    // Generated tokens for output (group by token name, take first value)
+    public Dictionary<string, string> ColorTokens => _colorTokens
+        .GroupBy(kv => kv.Value).ToDictionary(g => g.Key, g => g.First().Key);
+    public Dictionary<string, string> SpacingTokens => _spacingTokens
+        .GroupBy(kv => kv.Value).ToDictionary(g => g.Key, g => g.First().Key);
+    public Dictionary<string, string> FontTokens => _fontTokens
+        .GroupBy(kv => kv.Value).ToDictionary(g => g.Key, g => g.First().Key);
+    public Dictionary<string, string> RadiusTokens => _radiusTokens
+        .GroupBy(kv => kv.Value).ToDictionary(g => g.Key, g => g.First().Key);
 
     /// <summary>
     /// Build token mappings from analysis result
@@ -142,17 +146,17 @@ public class DesignTokenMapper
 
     private void BuildRadiusTokens(ComponentAnalysisResult result)
     {
-        // Standard radius scale
+        // Standard radius scale (unique names)
         _radiusTokens["0px"] = "none";
         _radiusTokens["2px"] = "sm";
         _radiusTokens["4px"] = "md";
-        _radiusTokens["6px"] = "md";
+        _radiusTokens["6px"] = "base";
         _radiusTokens["8px"] = "lg";
         _radiusTokens["12px"] = "xl";
         _radiusTokens["16px"] = "2xl";
         _radiusTokens["24px"] = "3xl";
         _radiusTokens["9999px"] = "full";
-        _radiusTokens["50%"] = "full";
+        _radiusTokens["50%"] = "round";
     }
 
     /// <summary>
